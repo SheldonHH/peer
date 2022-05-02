@@ -21,7 +21,7 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int insertViandProof(UUID data_id,ViandProof viandProof)
     {
-        String SQL = "INSERT INTO U_PERSON_DATA(data_id,name,u1,u2,verified) "
+        String SQL = "INSERT INTO V_PERSON_DATA(data_id,name,v1,v2,verified) "
                 + "VALUES(?,?,?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
@@ -30,10 +30,12 @@ public class PeerDataAccessService implements PeerDao{
             System.out.println("uiandProof.getUi()"+ Arrays.toString(viandProof.getVi()));
             pstmt.setObject(1, data_id);
             pstmt.setObject(2, viandProof.getUserid());
-            long[] ui_arr =  viandProof.getVi();
-            Long[] aLong = new Long[ui_arr.length];
-            Arrays.setAll(aLong, i -> aLong[i]);
-            Array sg = conn.createArrayOf("BIGINT", aLong);
+            long[] vi_arr =  viandProof.getVi();
+            // convert to string array first, then insert as TEXT array
+            String[] strArray = Arrays.stream(vi_arr)
+                    .mapToObj(String::valueOf)
+                    .toArray(String[]::new);
+            Array sg = conn.createArrayOf("TEXT", strArray);
             pstmt.setArray(3,  sg);
             pstmt.setArray(4, sg);
             pstmt.setBoolean(5, false);

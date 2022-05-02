@@ -22,7 +22,7 @@ public class ServerDataAccessService implements ServerDao{
 
         @Override
     public int insertUiandProof(UUID data_id, UiandProof uiandProof) {
-        String SQL = "INSERT INTO V_PERSON_DATA(data_id,name,u1,u2,verified) "
+        String SQL = "INSERT INTO V_PERSON_DATA(data_id,name,v1,v1,verified) "
                     + "VALUES(?,?,?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,

@@ -247,22 +247,6 @@ public class P4PSim extends P4PParameters {
 // UserVector2(data, F, l, g, h)
 // 2️⃣. Shares: u, v
                         uv.generateShares();
-                        try {
-                            Socket socketConnection = new Socket("127.0.0.1", 8800);
-                            DataOutputStream outToServer = new DataOutputStream(socketConnection.getOutputStream());
-                            System.out.println(uv.getU());
-
-
-
-                            outToServer.writeUTF(Arrays.toString(uv.getV()));
-
-                            Socket socketConnection_peer = new Socket("127.0.0.1", 8801);
-                            DataOutputStream outToSpeer = new DataOutputStream(socketConnection_peer.getOutputStream());
-                            System.out.println(uv.getV());
-                            outToSpeer.writeUTF(Arrays.toString(uv.getV()));
-                        } catch (Exception e) {
-                            System.out.println(e);
-                        }
 
 
 // 2.1 Set checkCoVector through server challenge_vector for each user 🐢

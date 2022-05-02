@@ -73,15 +73,15 @@ ALTER TABLE public.u_person_data OWNER TO server2;
 DROP TABLE IF EXISTS U_PERSON_DATA; 
 CREATE TABLE U_PERSON_DATA (
 	data_id UUID PRIMARY KEY,
-	name VARCHAR ( 50 ) UNIQUE NOT NULL,
-	u1 bigint[],
-	u2 bigint[],
+	name VARCHAR ( 50 ) NOT NULL,
+	u1 text[],
+	u2 text[],
 	verified boolean	
 );
 DROP TABLE IF EXISTS GAUSS_UNIT;
 CREATE TABLE GAUSS_UNIT (
 	unit_id UUID PRIMARY KEY,
-	name VARCHAR ( 50 ) UNIQUE NOT NULL,
+	name VARCHAR ( 50 )  NOT NULL,
 	x integer,
 	y integer	
 );
@@ -93,16 +93,16 @@ CREATE TABLE GAUSS_UNIT (
 DROP TABLE V_PERSON_DATA;
 CREATE TABLE V_PERSON_DATA (
 	data_id UUID PRIMARY KEY,
-	name VARCHAR ( 50 ) UNIQUE NOT NULL,
-	v1 bigint[],
-	v2 bigint[],
+	name VARCHAR ( 50 ) NOT NULL,
+	v1 text[],
+	v2 text[],
 	verified boolean	
 );
 DROP TABLE V_HashMatrix;
 CREATE TABLE V_HashMatrix (
 	data_id UUID PRIMARY KEY,
-	name VARCHAR ( 50 ) UNIQUE NOT NULL,
-	rcType VARCHAR ( 50 ) UNIQUE NOT NULL,
+	name VARCHAR ( 50 ) NOT NULL,
+	rcType VARCHAR ( 50 ) NOT NULL,
 	index_num integer,
 	index_Hash bigint[]
 );
