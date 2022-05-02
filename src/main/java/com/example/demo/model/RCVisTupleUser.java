@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public class RCVisTupleUser {
@@ -22,7 +24,7 @@ public class RCVisTupleUser {
         this.rcVisTuple = rcVisTuple;
     }
 
-    public RCVisTupleUser(UUID userid, RCVisTuple rcVisTuple) {
+    public RCVisTupleUser(@JsonProperty("userid")  UUID userid, @JsonProperty("rcVisTuple")  RCVisTuple rcVisTuple) {
         this.userid = userid;
         this.rcVisTuple = rcVisTuple;
     }

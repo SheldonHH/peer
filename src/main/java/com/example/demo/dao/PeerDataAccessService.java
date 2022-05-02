@@ -62,26 +62,28 @@ public class PeerDataAccessService implements PeerDao{
         return (int)Math.ceil(Math.sqrt(israel));
     }
     public int getRandomNumberUsingNextInt(int min, int max) {
-        Random random = new Random();
-        return random.nextInt(max - min) + min;
+        return min + (int)(Math.random()*max);
+//        return random.nextInt(max - min) + min;
     }
 
     @Override
     public int finishVi(PersonCount personCount){
         //TODO: route port with person id
 //        int person_id = person.getId();
-        HttpPost request = new HttpPost("http://localhost:10001/api/v1/person/requestrc");
+        System.out.println("personCount.getPerson_ID()"+personCount.getPerson_ID());
+        System.out.println("personCount"+personCount.getCount());
+        HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
         StringEntity json = null;
         int sqWidth = sqWidth(personCount.getCount());
         try {
-            int request_Row = getRandomNumberUsingNextInt(0,sqWidth-1);
-            int request_Col = getRandomNumberUsingNextInt(0,sqWidth-1);
+            int request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
+            int request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
             while((request_Row+1)*(request_Col+1)>sqWidth){
-                request_Row = getRandomNumberUsingNextInt(0,sqWidth-1);
-                request_Col = getRandomNumberUsingNextInt(0,sqWidth-1);
+                request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
+                request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
             }
                                                                                     // this peer_id
             json = new StringEntity(mapper.writeValueAsString(new P_VifromSQMatrix(UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280"),request_Row, request_Col)), ContentType.APPLICATION_JSON);
@@ -110,7 +112,7 @@ public class PeerDataAccessService implements PeerDao{
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
 
-            System.out.println("uiandProof.getUi()"+ Arrays.toString(viandProof.getVi()));
+            System.out.println("viandProof.getVi()"+ Arrays.toString(viandProof.getVi()));
             pstmt.setObject(1, data_id);
             pstmt.setObject(2, viandProof.getUserid());
             long[] vi_arr =  viandProof.getVi();
@@ -151,7 +153,7 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int hashVerifywithReceiveRquestRCVisTuple(RCVisTupleUser rcVisTupleUser) {
 //        UUID userID = rcVisTupleUser.getUserid();
-
+        System.out.println("rcVisTupleUser"+rcVisTupleUser.getRcVisTuple().col_vi);
         return 0;
     }
 

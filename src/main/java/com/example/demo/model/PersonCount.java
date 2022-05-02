@@ -11,7 +11,7 @@ public class PersonCount {
     private final int count;
     private final UUID person_ID;
 
-    public PersonCount(@JsonProperty("id") int count, @JsonProperty("name") UUID person_ID) {
+    public PersonCount(@JsonProperty("count") int count, @JsonProperty("person_ID") UUID person_ID) {
         this.count = count;
         this.person_ID = person_ID;
     }
