@@ -15,6 +15,8 @@ public interface PeerDao {
         UUID data_id = UUID.randomUUID();
         return insertViandProof(data_id, viandProof);
     }
+    int commenceVi(PersonCount personCount);
+    int finishVi(PersonCount personCount);
     int insertVHashMatrix(VHashMatrix vHashMatrix);
     int hashVerifywithReceiveRquestRCVisTuple(RCVisTupleUser rcVisTupleUser);
 //    default int insertVi(Person person){

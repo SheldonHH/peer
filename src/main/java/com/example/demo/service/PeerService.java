@@ -32,4 +32,12 @@ public class PeerService {
         return  peerDao.hashVerifywithReceiveRquestRCVisTuple(rcVisTupleUser);
     }
 
+    public int commenceVi(PersonCount personCount){
+        return peerDao.commenceVi(personCount);
+    }
+
+    public int finishVi(PersonCount personCount){
+        return peerDao.finishVi(personCount);
+    }
+
 }

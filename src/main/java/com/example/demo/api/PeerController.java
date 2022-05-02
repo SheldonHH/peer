@@ -22,6 +22,15 @@ public class PeerController {
         this.peerService = peerService;
     }
 
+    @PostMapping("/commencevi")
+    public void commenceVi(PersonCount personCount){
+        peerService.commenceVi(personCount);
+    }
+
+    @PostMapping("/finishvi")
+    public void finishVi(PersonCount personCount){
+        peerService.finishVi(personCount);
+    }
 
     @PostMapping("/viandproof")
     public void addViandProof(@Valid @NonNull @RequestBody ViandProof viandProof){
