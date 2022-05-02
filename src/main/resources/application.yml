@@ -1,0 +1,10 @@
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:5432/peer1
+    username: peer1
+    password: password
+    pool-size: 30
+  flyway:
+    baselineOnMigrate: true
+server:
+  port : 9001
