@@ -23,12 +23,12 @@ public class PeerController {
     }
 
     @PostMapping("/commencevi")
-    public void commenceVi(PersonCount personCount){
+    public void commenceVi(@Valid @NonNull @RequestBody PersonCount personCount){
         peerService.commenceVi(personCount);
     }
 
     @PostMapping("/finishvi")
-    public void finishVi(PersonCount personCount){
+    public void finishVi(@Valid @NonNull @RequestBody PersonCount personCount){
         peerService.finishVi(personCount);
     }
 
