@@ -72,33 +72,36 @@ public class PeerDataAccessService implements PeerDao{
 //        int person_id = person.getId();
         System.out.println("personCount.getPerson_ID()"+personCount.getPerson_ID());
         System.out.println("personCount"+personCount.getCount());
-        HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
-        StringEntity json = null;
         int sqWidth = sqWidth(personCount.getCount());
+        int request_Row = 0;
+        int request_Col = 0;
+
+        request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
+        request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
+        while((request_Row+1)*(request_Col+1)>sqWidth){
+            request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
+            request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
+        }
+        System.out.println("request_Row"+request_Row);
+        System.out.println("request_Col"+request_Col);
+        // this peer_id
         try {
-            int request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
-            int request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
-            while((request_Row+1)*(request_Col+1)>sqWidth){
-                request_Row = getRandomNumberUsingNextInt(1,sqWidth-1);
-                request_Col = getRandomNumberUsingNextInt(1,sqWidth-1);
+            HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
+            P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280"),request_Row, request_Col);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+            StringEntity json = new StringEntity(mapper.writeValueAsString(p_vifromSQMatrix), ContentType.APPLICATION_JSON);
+            request.setEntity(json);
+            CloseableHttpResponse response = httpClient.execute(request);
+            if(response.getStatusLine().getStatusCode() != 200){
+                System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
             }
-                                                                                    // this peer_id
-            json = new StringEntity(mapper.writeValueAsString(new P_VifromSQMatrix(UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280"),request_Row, request_Col)), ContentType.APPLICATION_JSON);
+            response.close();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
-        request.setEntity(json);
-        CloseableHttpResponse response = null;
-        try {
-            response = httpClient.execute(request);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        if(response.getStatusLine().getStatusCode() != 200){
-            System.out.println("finishSending is not added! "+response.getStatusLine().getStatusCode() );
         }
         return 0;
     }
@@ -153,7 +156,7 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int hashVerifywithReceiveRquestRCVisTuple(RCVisTupleUser rcVisTupleUser) {
 //        UUID userID = rcVisTupleUser.getUserid();
-        System.out.println("rcVisTupleUser"+rcVisTupleUser.getRcVisTuple().col_vi);
+        System.out.println("rcVisTupleUser"+rcVisTupleUser.getRcVisTuple().getCol_vi());
         return 0;
     }
 
