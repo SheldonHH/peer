@@ -43,8 +43,8 @@ public class PeerController {
     }
 
     @PostMapping("/rcvituples")
-    public void sendRquestRCVisTuple (@Valid @NonNull @RequestBody RCVisTupleUser rcVisTupleUser){
-        peerService.hashVerifywithReceiveRquestRCVisTuple(rcVisTupleUser);
+    public void sendRquestRCVisTuple (@Valid @NonNull @RequestBody ResponseVRowCol responseVRowCol){
+        peerService.hashVerifywithReceiveRquestRCVisTuple(responseVRowCol);
     }
 
 

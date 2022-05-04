@@ -28,8 +28,8 @@ public class PeerService {
          return  peerDao.insertVHashMatrix(vHashMatrix);
     }
 
-    public int hashVerifywithReceiveRquestRCVisTuple(RCVisTupleUser rcVisTupleUser){
-        return  peerDao.hashVerifywithReceiveRquestRCVisTuple(rcVisTupleUser);
+    public int hashVerifywithReceiveRquestRCVisTuple(ResponseVRowCol responseVRowCol){
+        return  peerDao.hashVerifywithReceiveRquestRCVisTuple(responseVRowCol);
     }
 
     public int commenceVi(PersonCount personCount){

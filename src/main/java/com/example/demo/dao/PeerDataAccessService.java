@@ -158,9 +158,11 @@ public class PeerDataAccessService implements PeerDao{
     }
 
     @Override
-    public int hashVerifywithReceiveRquestRCVisTuple(RCVisTupleUser rcVisTupleUser) {
+    public int hashVerifywithReceiveRquestRCVisTuple(ResponseVRowCol responseVRowCol) {
 //        UUID userID = rcVisTupleUser.getUserid();
-        System.out.println("rcVisTupleUser"+rcVisTupleUser.getRcVisTuple().getCol_vi());
+        System.out.println("rcVisTupleUser getColVs"+responseVRowCol.getColVs());
+        System.out.println("rcVisTupleUser getRowVs"+responseVRowCol.getRowVs());
+
         return 0;
     }
 
