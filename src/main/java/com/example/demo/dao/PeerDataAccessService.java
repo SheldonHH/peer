@@ -162,6 +162,8 @@ public class PeerDataAccessService implements PeerDao{
 //        UUID userID = rcVisTupleUser.getUserid();
         System.out.println("rcVisTupleUser getColVs"+responseVRowCol.getColVs());
         System.out.println("rcVisTupleUser getRowVs"+responseVRowCol.getRowVs());
+        System.out.println("responseVRowCol.getRowVs().toString():"+responseVRowCol.getRowVs().toString());
+        System.out.println("rcVisTupleUser getRowVs hash"+responseVRowCol.getRowVs().toString().hashCode());
 
         return 0;
     }
@@ -172,7 +174,7 @@ public class PeerDataAccessService implements PeerDao{
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-            preparedStatement.setString(1, person_id.toString());
+            preparedStatement.setObject(1, person_id);
             ResultSet rs = preparedStatement.executeQuery();
 
             ArrayList<ArrayList<Long>> TwoDResultList = new ArrayList<ArrayList<Long>>();
