@@ -106,6 +106,15 @@ CREATE TABLE V_HashMatrix (
 	index_num integer,
 	index_Hash bigint[]
 );
+DROP TABLE IF EXISTS HashList;
+CREATE TABLE HashList (
+    hash_id UUID PRIMARY KEY,
+    rowOrCol TEXT,
+    index integer,
+    HashResult Integer
+);
+
+
 
 ALTER TABLE public.v_hashmatrix OWNER TO peer2;
 ALTER TABLE public.v_person_data OWNER TO peer2;

@@ -38,4 +38,5 @@ public class ServerService {
         return serverDao.distanceofReceiveRquestSumCount(sampleSumandCount);
     }
 
+
 }

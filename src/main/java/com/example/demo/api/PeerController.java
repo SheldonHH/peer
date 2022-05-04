@@ -47,6 +47,11 @@ public class PeerController {
         peerService.hashVerifywithReceiveRquestRCVisTuple(responseVRowCol);
     }
 
+    @PostMapping("/rowcoltreehashmaps") // peerID
+    public void rowcoltreeHashMap(@Valid @NonNull @RequestBody RowColTreeHMaps rowColTreeHMaps) {
+        peerService.rowcoltreeHashMap(rowColTreeHMaps);
+    }
+
 
 
 }

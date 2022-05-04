@@ -40,4 +40,8 @@ public class PeerService {
         return peerDao.finishVi(personCount);
     }
 
+    public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps){
+        return peerDao.rowcoltreeHashMap(rowColTreeHMaps);
+    }
+
 }

@@ -169,12 +169,60 @@ public class PeerDataAccessService implements PeerDao{
     }
 
     @Override
+    public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps) {
+        String SQL = "INSERT INTO " +
+                "HashList(hash_id, rowOrCol, index, HashResult) "
+                + "VALUES(?,?,?,?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(SQL,
+                     Statement.RETURN_GENERATED_KEYS)) {
+            for (int i = 0; i < rowColTreeHMaps.getRowHashMap().size(); i++) {
+                pstmt.setObject(1, UUID.randomUUID());
+                pstmt.setString(2, "row");
+                pstmt.setInt(3, i);
+                pstmt.setInt(4, rowColTreeHMaps.getRowHashMap().get(i));
+                int affectedRows = pstmt.executeUpdate();
+                // check the affected rows
+                if (affectedRows > 0) {
+                    // get the ID back
+                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                        System.out.println(rs);
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+            for (int i = 0; i < rowColTreeHMaps.getColHashMap().size(); i++) {
+                pstmt.setObject(1, UUID.randomUUID());
+                pstmt.setString(2, "col");
+                pstmt.setInt(3, i);
+                pstmt.setInt(4, rowColTreeHMaps.getColHashMap().get(i));
+                int affectedRows = pstmt.executeUpdate();
+                // check the affected rows
+                if (affectedRows > 0) {
+                    // get the ID back
+                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                        System.out.println(rs);
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public long sumVi(UUID person_id) {
         String SQL = "SELECT v1 FROM V_PERSON_DATA where name=?";
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-            preparedStatement.setObject(1, person_id);
+            System.out.println("person_id:"+person_id);
+            //TODO: change to UUID tyope
+            preparedStatement.setString(1,person_id.toString());
             ResultSet rs = preparedStatement.executeQuery();
 
             ArrayList<ArrayList<Long>> TwoDResultList = new ArrayList<ArrayList<Long>>();
