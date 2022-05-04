@@ -89,6 +89,35 @@ public class PeerDataAccessService implements PeerDao{
         }
         System.out.println("request_Row"+request_Row);
         System.out.println("request_Col"+request_Col);
+
+
+        String SQL = "INSERT INTO PERSON_RC(rc_id, user_id, row, col) "
+                + "VALUES(?,?,?,?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(SQL,
+                     Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setObject(1, UUID.randomUUID());
+            pstmt.setObject(2, personCount.getPerson_ID());
+            pstmt.setInt(3, request_Row);
+            pstmt.setInt(4, request_Col);
+            // convert to string array first, then insert as TEXT array
+            int affectedRows = pstmt.executeUpdate();
+            // check the affected rows
+            if (affectedRows > 0) {
+                // get the ID back
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    System.out.println(rs);
+//                    if (rs.next()) {
+////                        id = rs.getLong(1);
+//                    }
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
         // this peer_id
         try {
             HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
@@ -160,27 +189,79 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int hashVerifywithReceiveRquestRCVisTuple(ResponseVRowCol responseVRowCol) {
 //        UUID userID = rcVisTupleUser.getUserid();
-        System.out.println("rcVisTupleUser getColVs"+responseVRowCol.getColVs());
-        System.out.println("rcVisTupleUser getRowVs"+responseVRowCol.getRowVs());
-        System.out.println("responseVRowCol.getRowVs().toString():"+responseVRowCol.getRowVs().toString());
-        System.out.println("rcVisTupleUser getRowVs hash"+responseVRowCol.getRowVs().toString().hashCode());
+        System.out.println("rcVisTupleUser getColVs" + responseVRowCol.getColVs());
+        System.out.println("rcVisTupleUser getRowVs" + responseVRowCol.getRowVs());
+        System.out.println("responseVRowCol.getRowVs().toString():" + responseVRowCol.getRowVs().toString());
+        System.out.println("rcVisTupleUser getRowVs hash" + responseVRowCol.getRowVs().toString().hashCode());
 
+        String rcSQL = "SELECT row, col from person_rc where user_id = ?";
+        String RowHashSQL = "SELECT hashresult from hashlist where index = ? and name = ? and roworcol='row'";
+        String colHashSQL = "SELECT hashresult from hashlist where index = ? and name = ? and roworcol='col'";
+        try {
+            Connection conn = connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(rcSQL);
+            //TODO: change to UUID tyope
+            preparedStatement.setObject(1, responseVRowCol.getUser_id());
+            ResultSet rs = preparedStatement.executeQuery();
+            int row=0;
+            int col=0;
+            while (rs.next()) {
+               row = rs.getInt(1);
+               col = rs.getInt(2);
+            }
+            rs.close();
+
+
+            preparedStatement = conn.prepareStatement(RowHashSQL);
+            preparedStatement.setInt(1, row);
+            preparedStatement.setObject(2, responseVRowCol.getUser_id());
+            ResultSet rsRow = preparedStatement.executeQuery();
+            int hashResultRow = 0;
+            while (rsRow.next()) {
+                hashResultRow = rsRow.getInt(1);
+            }
+            rsRow.close();
+
+            preparedStatement = conn.prepareStatement(colHashSQL);
+            preparedStatement.setInt(1, col);
+            preparedStatement.setObject(2, responseVRowCol.getUser_id());
+            ResultSet rsCol = preparedStatement.executeQuery();
+            int hashResultcol = 0;
+            while (rsCol.next()) {
+                hashResultcol = rsCol.getInt(1);
+            }
+            rsCol.close();
+            System.out.println("responseVRowCol.getUser_id():"+responseVRowCol.getUser_id());
+            System.out.println("hashResultcol"+hashResultcol);
+
+            System.out.println("hashResultRow"+hashResultRow);
+            if(hashResultRow == responseVRowCol.getRowVs().toString().hashCode()){
+                System.out.println("row V verification pass");
+            }
+
+            if(hashResultcol == responseVRowCol.getColVs().toString().hashCode()){
+                System.out.println("col V verification pass");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
-
-    @Override
+        @Override
     public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps) {
         String SQL = "INSERT INTO " +
-                "HashList(hash_id, rowOrCol, index, HashResult) "
-                + "VALUES(?,?,?,?)";
+                "HashList(hash_id, name, rowOrCol, index, HashResult) "
+                + "VALUES(?,?,?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
             for (int i = 0; i < rowColTreeHMaps.getRowHashMap().size(); i++) {
                 pstmt.setObject(1, UUID.randomUUID());
-                pstmt.setString(2, "row");
-                pstmt.setInt(3, i);
-                pstmt.setInt(4, rowColTreeHMaps.getRowHashMap().get(i));
+                pstmt.setObject(2, rowColTreeHMaps.getUser_id());
+                pstmt.setString(3, "row");
+                pstmt.setInt(4, i);
+                pstmt.setInt(5, rowColTreeHMaps.getRowHashMap().get(i));
                 int affectedRows = pstmt.executeUpdate();
                 // check the affected rows
                 if (affectedRows > 0) {
@@ -194,9 +275,10 @@ public class PeerDataAccessService implements PeerDao{
             }
             for (int i = 0; i < rowColTreeHMaps.getColHashMap().size(); i++) {
                 pstmt.setObject(1, UUID.randomUUID());
-                pstmt.setString(2, "col");
-                pstmt.setInt(3, i);
-                pstmt.setInt(4, rowColTreeHMaps.getColHashMap().get(i));
+                pstmt.setObject(2, rowColTreeHMaps.getUser_id());
+                pstmt.setString(3, "col");
+                pstmt.setInt(4, i);
+                pstmt.setInt(5, rowColTreeHMaps.getColHashMap().get(i));
                 int affectedRows = pstmt.executeUpdate();
                 // check the affected rows
                 if (affectedRows > 0) {

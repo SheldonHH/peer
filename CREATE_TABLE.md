@@ -109,9 +109,18 @@ CREATE TABLE V_HashMatrix (
 DROP TABLE IF EXISTS HashList;
 CREATE TABLE HashList (
     hash_id UUID PRIMARY KEY,
+    name UUID NOT NULL,
     rowOrCol TEXT,
     index integer,
     HashResult Integer
+);
+
+DROP TABLE IF EXISTS person_rc;
+CREATE TABLE person_rc (
+    rc_id UUID PRIMARY KEY, 
+    user_id UUID,
+    row integer,
+    col integer
 );
 
 
