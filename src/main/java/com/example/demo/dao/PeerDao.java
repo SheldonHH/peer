@@ -25,7 +25,7 @@ public interface PeerDao {
 //    }
     // return zero or one depends on whether data is persisted
 
-    long sumVi(Person person);
+    long sumVi(UUID person_id);
 
 //    Optional<long[]> selectPeerVById(UUID id);
 

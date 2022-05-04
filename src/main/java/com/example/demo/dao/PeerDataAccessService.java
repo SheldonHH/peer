@@ -5,6 +5,7 @@ import com.example.demo.p4p.user.UserVector2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -24,6 +25,7 @@ public class PeerDataAccessService implements PeerDao{
     private final String url = "jdbc:postgresql://localhost:5432/peer1";
     private final String user = "peer1";
     private final String password = "password";
+    UUID peer_id = UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280");
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
@@ -70,6 +72,8 @@ public class PeerDataAccessService implements PeerDao{
     public int finishVi(PersonCount personCount){
         //TODO: route port with person id
 //        int person_id = person.getId();
+
+        sumVi(personCount.getPerson_ID());
         System.out.println("personCount.getPerson_ID()"+personCount.getPerson_ID());
         System.out.println("personCount"+personCount.getCount());
 
@@ -88,7 +92,7 @@ public class PeerDataAccessService implements PeerDao{
         // this peer_id
         try {
             HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
-            P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280"),request_Row, request_Col);
+            P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(peer_id,request_Row, request_Col);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
             StringEntity json = new StringEntity(mapper.writeValueAsString(p_vifromSQMatrix), ContentType.APPLICATION_JSON);
@@ -161,7 +165,62 @@ public class PeerDataAccessService implements PeerDao{
     }
 
     @Override
-    public long sumVi(Person person) {
+    public long sumVi(UUID person_id) {
+        String SQL = "SELECT v1 FROM V_PERSON_DATA where name=?";
+        try {
+            Connection conn = connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(SQL);
+            preparedStatement.setString(1, person_id.toString());
+            ResultSet rs = preparedStatement.executeQuery();
+
+            ArrayList<ArrayList<Long>> TwoDResultList = new ArrayList<ArrayList<Long>>();
+            ArrayList<String> stringList = new ArrayList<String>();
+            while (rs.next()) {
+                stringList = new ArrayList<>(Arrays.asList((String[]) rs.getArray("v1").getArray()));
+                System.out.println(Arrays.asList((String[]) rs.getArray("v1").getArray()));
+                ArrayList<Long> resultIntList = new ArrayList<Long>();
+                for (String stringValue : stringList) {
+                    try {
+                        //Convert String to long, and store it into long array list.
+                        resultIntList.add(Long.parseLong(stringValue));
+                    } catch (NumberFormatException nfe) {
+                        System.out.println("Could not parse " + nfe);
+//                        Log.w("NumberFormat", "Parsing failed! " + stringValue + " can not be an integer");
+                    }
+                }
+                TwoDResultList.add(resultIntList);
+            }
+            ArrayList<Long> sum = new ArrayList<Long>(TwoDResultList.get(0).size());
+            for (int i = 0; i < TwoDResultList.get(0).size(); i++) {
+                sum.add(i, 0L);
+            }
+            for (ArrayList<Long> sg : TwoDResultList) {
+                for (int i = 0; i < sg.size(); i++) {
+                    sum.set(i, sum.get(i) + sg.get(i));
+                }
+            }
+
+            HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/addvsum");
+            VSum vsum = new VSum(peer_id, sum);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+            StringEntity json = new StringEntity(mapper.writeValueAsString(vsum), ContentType.APPLICATION_JSON);
+            request.setEntity(json);
+            CloseableHttpResponse response = httpClient.execute(request);
+            if(response.getStatusLine().getStatusCode() != 200){
+                System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+            }
+            response.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return 0;
     }
 
