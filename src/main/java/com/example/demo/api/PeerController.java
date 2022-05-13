@@ -1,17 +1,11 @@
 package com.example.demo.api;
 
 import com.example.demo.model.*;
-import com.example.demo.p4p.user.UserVector2;
 import com.example.demo.service.PeerService;
-import com.example.demo.service.PersonService;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("api/v1/peer")
 @RestController
