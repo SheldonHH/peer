@@ -65,8 +65,8 @@ public class P4PServer extends P4PParameters {
     private NativeBigInteger h = new NativeBigInteger("1815409602493030510804268646246184547552449386433387561905816534248675443892847368541434018303659631380097127756952567150690215332149993674119991116919571")
 ;
 
-    protected int m = -1;            // The dimension of user vector
-    protected long F = -1;
+    public int m = 2;            // The dimension of user vector
+    public long F = 3871393383742833983L;
     /**
      * The order of the (small) finite field over which all the computations
      * are carried out. It should be a prime of appropriate bit-length (e.g.

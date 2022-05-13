@@ -76,15 +76,18 @@ import org.apache.http.util.EntityUtils;
  */
 
 public class P4PSim extends P4PParameters {
-    private static NativeBigInteger g = new NativeBigInteger("3459276026518079674568408512735917085876933054878224377582397778495423201743627684916338757642004215208935956214764216182555928533733818616652879775932081");
-    private static NativeBigInteger h = new NativeBigInteger("1815409602493030510804268646246184547552449386433387561905816534248675443892847368541434018303659631380097127756952567150690215332149993674119991116919571");
+    public static NativeBigInteger g = new NativeBigInteger("3459276026518079674568408512735917085876933054878224377582397778495423201743627684916338757642004215208935956214764216182555928533733818616652879775932081");
+    public static NativeBigInteger h = new NativeBigInteger("1815409602493030510804268646246184547552449386433387561905816534248675443892847368541434018303659631380097127756952567150690215332149993674119991116919571");
 
 
-    private static int k = 512;     // Security parameter
-    private static int m = 3;      // User vector dimension
-    private static int n = 1;      // Number of users
-    private static int l = 40;      // Bit length of L
+    public static int k = 512;     // Security parameter
+    public static int m = 3;      // User vector dimension
+    public static int n = 1;      // Number of users
+    public static int l = 40;      // Bit length of L
     final static CloseableHttpClient httpClient = HttpClients.createDefault();
+    public static long F = 3871393383742833983L;
+    public static int[][] c = new int[][] {{-1, 1, 0}, {0, 0, 1}, {-1, -1, 1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, 1}, {1, 0, -1}, {0, 1, 1}, {-1, 0, 0}, {0, 1, -1}, {-1, 0, -1}, {1, 0, 0}, {0, -1, 0}, {-1, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {0, 1, 1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 1}, {0, 0, 0}, {1, 1, 0}, {0, -1, 0}, {0, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, -1, 1}, {1, 0, 1}, {0, -1, 0}, {1, 0, -1}, {1, 0, -1}, {-1, -1, -1}, {0, 1, 1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 1}, {0, -1, 0}, {1, 0, 0}, {0, 1, 1}, {0, 0, 0}, {-1, 0, -1}, {1, 1, -1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0}, {1, 0, -1}, {0, 1, 0}};
+
 
     /* Start a simulation.
      */

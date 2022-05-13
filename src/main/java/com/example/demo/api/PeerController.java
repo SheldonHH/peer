@@ -1,6 +1,8 @@
 package com.example.demo.api;
 
 import com.example.demo.model.*;
+import com.example.demo.model.vmatrixhash.ResponseVRowCol;
+import com.example.demo.model.vmatrixhash.RowColTreeHMaps;
 import com.example.demo.service.PeerService;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.*;

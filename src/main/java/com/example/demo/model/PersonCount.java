@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
-
+// count total number of row that is training device have
 public class PersonCount {
 
     @NotBlank

@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.example.demo.model.vmatrixhash.RowColHash;
+
 import java.util.UUID;
 
 public class VHashMatrix {

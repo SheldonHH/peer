@@ -1,6 +1,11 @@
 package com.example.demo.dao;
 
 import com.example.demo.model.*;
+import com.example.demo.model.vmatrixhash.P_VifromSQMatrix;
+import com.example.demo.model.vmatrixhash.ResponseVRowCol;
+import com.example.demo.model.vmatrixhash.RowColTreeHMaps;
+import com.example.demo.p4p.server.P4PServer;
+import com.example.demo.p4p.sim.P4PSim;
 import com.example.demo.p4p.user.UserVector2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +20,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
+
+import static com.example.demo.p4p.sim.P4PSim.m;
 
 @Repository("postgres1")
 public class PeerDataAccessService implements PeerDao{
@@ -26,6 +32,8 @@ public class PeerDataAccessService implements PeerDao{
     private final String user = "peer1";
     private final String password = "password";
     UUID peer_id = UUID.fromString("b75de71c-c097-47c9-b4ee-62deeaba5280");
+    public static UserVector2 pv = new UserVector2(m, P4PSim.F, P4PSim.l, P4PSim.g, P4PSim.h);
+
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
@@ -156,10 +164,11 @@ public class PeerDataAccessService implements PeerDao{
             String[] strArray = Arrays.stream(vi_arr)
                     .mapToObj(String::valueOf)
                     .toArray(String[]::new);
-            Array sg = conn.createArrayOf("TEXT", strArray);
-            pstmt.setArray(3,  sg);
-            pstmt.setArray(4, sg);
-            pstmt.setBoolean(5, false);
+            Array vi_array = conn.createArrayOf("TEXT", strArray);
+            pstmt.setArray(3,  vi_array);
+            pstmt.setArray(4, vi_array);
+            boolean peerPassed = pv.verify2(viandProof.getPeerProof()); // 🌟 verify2 🌟
+            pstmt.setBoolean(5, peerPassed);
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -328,9 +337,9 @@ public class PeerDataAccessService implements PeerDao{
             for (int i = 0; i < TwoDResultList.get(0).size(); i++) {
                 sum.add(i, 0L);
             }
-            for (ArrayList<Long> sg : TwoDResultList) {
-                for (int i = 0; i < sg.size(); i++) {
-                    sum.set(i, sum.get(i) + sg.get(i));
+            for (ArrayList<Long> vi_array : TwoDResultList) {
+                for (int i = 0; i < vi_array.size(); i++) {
+                    sum.set(i, sum.get(i) + vi_array.get(i));
                 }
             }
 
