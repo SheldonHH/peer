@@ -18,7 +18,7 @@ CREATE TABLE person_rc (
     col integer
 );
 CREATE TABLE PERSON_STATS (
-    user_id UUID PRIMARY,
+    user_id UUID PRIMARY KEY,
     count integer
 );
 
