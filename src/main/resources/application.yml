@@ -5,6 +5,6 @@ app:
     password: password
     pool-size: 30
   flyway:
-    baselineOnMigrate: true
+    baseline-on-migrate: true
 server:
   port : 9001

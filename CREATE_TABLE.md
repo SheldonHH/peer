@@ -57,7 +57,8 @@ ALTER TABLE public.flyway_schema_history OWNER TO peer2;
 ALTER TABLE public.flyway_schema_history OWNER TO server1;
 \c server2
 ALTER TABLE public.flyway_schema_history OWNER TO server2;
-
+\c client1
+ALTER TABLE public.flyway_schema_history OWNER TO server2;
 
 DROP TABLE PERSON;
 CREATE TABLE PERSON (

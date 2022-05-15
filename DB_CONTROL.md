@@ -3,6 +3,7 @@ pg_dump -U postgres -t flyway_schema_history demodb | psql server2  -U postgres
 pg_dump -U postgres -t flyway_schema_history demodb | psql peer1  -U postgres
 pg_dump -U postgres -t flyway_schema_history demodb | psql peer2  -U postgres
 
+pg_dump -U postgres -t flyway_schema_history server1 > flyway_schema_history.dmp
 ```
 docker exec -it $(docker ps | grep -E 'postgres-spring' | awk '{print $1}') /bin/bash
 psql -U postgres
