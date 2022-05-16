@@ -41,7 +41,7 @@ class Multi1 extends Thread{
     NativeBigInteger h = new NativeBigInteger("1815409602493030510804268646246184547552449386433387561905816534248675443892847368541434018303659631380097127756952567150690215332149993674119991116919571")
 ;
     int k = 512;     // Security parameter
-    int m = 3;      // User vector dimension
+    int m = 2;      // User vector dimension
     int n = 1;      // Number of users
     int l = 40;      // Bit length of L
     int zkpIterations = 50;

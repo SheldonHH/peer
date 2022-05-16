@@ -71,7 +71,7 @@ import com.example.demo.p4p.crypto.BitVectorCommitment;
 public class UserVector extends P4PParameters {
 
     protected long[] data = null;   // The user data
-    protected int m = 3;          // The dimension of user vector
+    protected int m = 2;          // The dimension of user vector
 
     static protected long F = 3871393383742833983L;
     // The order of the (small) finite field over which all the
@@ -79,7 +79,7 @@ public class UserVector extends P4PParameters {
     // appropriate length (e.g. the length of a long).
 
 //    static protected int[][] c = null;    // The checksum coefficient vectors.
-    static protected int[][] c = new int[][] {{-1, 1, 0}, {0, 0, 1}, {-1, -1, 1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, 1}, {1, 0, -1}, {0, 1, 1}, {-1, 0, 0}, {0, 1, -1}, {-1, 0, -1}, {1, 0, 0}, {0, -1, 0}, {-1, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {0, 1, 1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 1}, {0, 0, 0}, {1, 1, 0}, {0, -1, 0}, {0, 0, 0}, {-1, 1, 0}, {-1, -1, 0}, {0, -1, 1}, {1, 0, 1}, {0, -1, 0}, {1, 0, -1}, {1, 0, -1}, {-1, -1, -1}, {0, 1, 1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 1}, {0, -1, 0}, {1, 0, 0}, {0, 1, 1}, {0, 0, 0}, {-1, 0, -1}, {1, 1, -1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0}, {1, 0, -1}, {0, 1, 0}};
+    static protected int[][] c = new int[][] {{-1, 1}, {0, 0}, {-1, -1}, {0, 0}, {0, 0}, {0, 0}, {0, -1}, {1, 0}, {0, 1}, {-1, 0}, {0, 1}, {-1, 0}, {1, 0}, {0, -1}, {-1, 0}, {-1, 0}, {0, 0}, {0, 1}, {0, 0}, {-1, 0}, {0, 0}, {0, 0}, {1, 1}, {0, -1}, {0, 0}, {-1, 1}, {-1, -1}, {0, -1}, {1, 0}, {0, -1}, {1, 0}, {1, 0}, {-1, -1}, {0, 1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {-1, 0}, {0, -1}, {1, 0}, {0, 1}, {0, 0}, {-1, 0}, {1, 1}, {0, 0}, {0, 1}, {0, -1}, {1, 0}, {0, 1}};
     static protected long L = 1099511627776L;
     static protected int l = 40;
 

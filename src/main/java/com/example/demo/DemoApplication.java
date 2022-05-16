@@ -28,7 +28,7 @@ public class DemoApplication {
 	}
 
 	public static void truncateVPersonandPersonRC(){
-		String SQL = "TRUNCATE TABLE V_PERSON_DATA; TRUNCATE TABLE person_rc; Truncate Table hashlist;";
+		String SQL = "TRUNCATE TABLE V_PERSON_DATA; TRUNCATE TABLE person_rc; Truncate Table hashlist;Truncate Table person_stats;";
 		try (Connection conn = connect();
 			 PreparedStatement pstmt = conn.prepareStatement(SQL,
 					 Statement.RETURN_GENERATED_KEYS)) {

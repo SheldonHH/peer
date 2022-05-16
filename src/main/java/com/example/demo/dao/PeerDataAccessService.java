@@ -167,6 +167,8 @@ public class PeerDataAccessService implements PeerDao{
             Array vi_array = conn.createArrayOf("TEXT", strArray);
             pstmt.setArray(3,  vi_array);
             pstmt.setArray(4, vi_array);
+            long [] V_longs = Arrays.stream(strArray).mapToLong(Long::parseLong).toArray();
+            pv.setV(V_longs);
             boolean peerPassed = pv.verify2(viandProof.getPeerProof()); // 🌟 verify2 🌟
             pstmt.setBoolean(5, peerPassed);
             int affectedRows = pstmt.executeUpdate();
@@ -344,7 +346,7 @@ public class PeerDataAccessService implements PeerDao{
             }
 
             HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/addvsum");
-            VSum vsum = new VSum(peer_id, sum);
+            VSum vsum = new VSum(peer_id, person_id, sum);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
             StringEntity json = new StringEntity(mapper.writeValueAsString(vsum), ContentType.APPLICATION_JSON);
