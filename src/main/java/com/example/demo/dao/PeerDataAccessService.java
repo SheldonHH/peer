@@ -253,6 +253,26 @@ public class PeerDataAccessService implements PeerDao{
             if(hashResultcol == responseVRowCol.getColVs().toString().hashCode()){
                 System.out.println("col V verification pass");
             }
+            if(hashResultcol != responseVRowCol.getColVs().toString().hashCode() || hashResultRow != responseVRowCol.getRowVs().toString().hashCode()){
+                System.out.println("NOT PASS V Hash TEST");
+                try {
+                    HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/cancel_ds");
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+                    StringEntity json = new StringEntity(mapper.writeValueAsString(responseVRowCol.getUser_id()), ContentType.APPLICATION_JSON);
+                    request.setEntity(json);
+                    CloseableHttpResponse response = httpClient.execute(request);
+                    if(response.getStatusLine().getStatusCode() != 200){
+                        System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+                    }
+                    response.close();
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

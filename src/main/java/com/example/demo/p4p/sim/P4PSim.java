@@ -92,7 +92,7 @@ public class P4PSim extends P4PParameters {
     /* Start a simulation.
      */
     public static void main(String[] args) {
-        UUID userid = UUID.fromString("1fa4fd06-34f0-49a4-baf9-a4073bca0292");
+//        UUID userid = UUID.fromString("1fa4fd06-34f0-49a4-baf9-a4073bca0292");
         int nLoops = 1;
         boolean doBench = false;
         boolean worstcase = false;
@@ -287,14 +287,14 @@ public class P4PSim extends P4PParameters {
                         server.setProof(i, serverProof);
 
                         HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/uiandproof");
-                        UiandProof uiandProof = new UiandProof(userid, uv.getU(),serverProof);
+//                        UiandProof uiandProof = new UiandProof(userid, uv.getU(),serverProof);
 
 
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
-                        StringEntity json = new StringEntity(mapper.writeValueAsString(uiandProof), ContentType.APPLICATION_JSON);
+//                        StringEntity json = new StringEntity(mapper.writeValueAsString(uiandProof), ContentType.APPLICATION_JSON);
 //
-                        request.setEntity(json);
+//                        request.setEntity(json);
 
                         CloseableHttpResponse response = httpClient.execute(request);
 
