@@ -256,7 +256,7 @@ public class PeerDataAccessService implements PeerDao{
             if(hashResultcol != responseVRowCol.getColVs().toString().hashCode() || hashResultRow != responseVRowCol.getRowVs().toString().hashCode()){
                 System.out.println("NOT PASS V Hash TEST");
                 try {
-                    HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/cancel_ds");
+                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
                     StringEntity json = new StringEntity(mapper.writeValueAsString(responseVRowCol.getUser_id()), ContentType.APPLICATION_JSON);
@@ -365,7 +365,7 @@ public class PeerDataAccessService implements PeerDao{
                 }
             }
 
-            HttpPost request = new HttpPost("http://localhost:8080/api/v1/server/addvsum");
+            HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/addvsum");
             VSum vsum = new VSum(peer_id, person_id, sum);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
