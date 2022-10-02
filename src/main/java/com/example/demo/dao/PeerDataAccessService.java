@@ -61,13 +61,18 @@ public class PeerDataAccessService implements PeerDao{
 
     @Override
     public int commenceVi(PersonCount personCount) {
-        String SQL = "INSERT INTO PERSON_STATS(user_id, count) "
-                + "VALUES(?,?)";
+        HashMap<String, String> userNameHashMap =
+                (userNameMap instanceof HashMap)
+                        ? (HashMap) userNameMap
+                        : new HashMap<String, String>(userNameMap);
+        String SQL = "INSERT INTO PERSON_STATS(user_id, client_name, count,created_at) "
+                + "VALUES(?,?,?,NOW())";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setObject(1, personCount.getPerson_ID());
-            pstmt.setInt(2, personCount.getCount());
+            pstmt.setString(2, userNameHashMap.get(personCount.getPerson_ID().toString()));
+            pstmt.setInt(3, personCount.getCount());
             // convert to string array first, then insert as TEXT array
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
@@ -119,8 +124,8 @@ public class PeerDataAccessService implements PeerDao{
         System.out.println("request_Col"+request_Col);
 
 
-        String SQL = "INSERT INTO PERSON_RC(rc_id, user_id, row, col) "
-                + "VALUES(?,?,?,?)";
+        String SQL = "INSERT INTO PERSON_RC(rc_id, user_id, row, col, created_at) "
+                + "VALUES(?,?,?,?,NOW())";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -311,8 +316,8 @@ public class PeerDataAccessService implements PeerDao{
         @Override
     public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps) {
         String SQL = "INSERT INTO " +
-                "HashList(hash_id, client_id, rowOrCol, index, HashResult) "
-                + "VALUES(?,?,?,?,?)";
+                "HashList(hash_id, client_id, rowOrCol, index, HashResult, created_at) "
+                + "VALUES(?,?,?,?,?, NOW())";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
