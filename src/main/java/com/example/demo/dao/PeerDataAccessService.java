@@ -223,12 +223,17 @@ public class PeerDataAccessService implements PeerDao{
 
     @Override
     public int hashVerifywithReceiveRquestRCVisTuple(ResponseVRowCol responseVRowCol) {
+        HashMap<String, String> userNameHashMap =
+                (userNameMap instanceof HashMap)
+                        ? (HashMap) userNameMap
+                        : new HashMap<String, String>(userNameMap);
+
+
 //        UUID userID = rcVisTupleUser.getUserid();
         System.out.println("rcVisTupleUser getColVs" + responseVRowCol.getColVs());
         System.out.println("rcVisTupleUser getRowVs" + responseVRowCol.getRowVs());
         System.out.println("responseVRowCol.getRowVs().toString():" + responseVRowCol.getRowVs().toString());
         System.out.println("rcVisTupleUser getRowVs hash" + responseVRowCol.getRowVs().toString().hashCode());
-
         String rcSQL = "SELECT row, col from person_rc where user_id = ?";
         String RowHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='row'";
         String colHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='col'";
@@ -271,17 +276,13 @@ public class PeerDataAccessService implements PeerDao{
 
             System.out.println("hashResultRow"+hashResultRow);
             if(hashResultRow == responseVRowCol.getRowVs().toString().hashCode()){
-                System.out.println("row V verification pass");
+                System.out.println(userNameHashMap.get(responseVRowCol.getUser_id().toString())+" row V verification pass");
             }
 
             if(hashResultcol == responseVRowCol.getColVs().toString().hashCode()){
-                System.out.println("col V verification pass");
+                System.out.println(userNameHashMap.get(responseVRowCol.getUser_id().toString())+" col V verification pass");
             }
             if(hashResultcol != responseVRowCol.getColVs().toString().hashCode() || hashResultRow != responseVRowCol.getRowVs().toString().hashCode()){
-                HashMap<String, String> userNameHashMap =
-                        (userNameMap instanceof HashMap)
-                                ? (HashMap) userNameMap
-                                : new HashMap<String, String>(userNameMap);
                 System.out.println(userNameHashMap.get(responseVRowCol.getUser_id().toString())+" NOT PASS V Hash TEST");
 //                try {
 //                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
