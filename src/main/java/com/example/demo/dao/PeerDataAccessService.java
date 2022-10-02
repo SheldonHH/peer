@@ -148,7 +148,12 @@ public class PeerDataAccessService implements PeerDao{
         }
         // this peer_id
         try {
-            HttpPost request = new HttpPost("http://localhost:6001/api/v1/person/requestrc");
+            HashMap<String, String> portHashMap =
+                    (userPortMap instanceof HashMap)
+                            ? (HashMap) userPortMap
+                            : new HashMap<String, String>(userPortMap);
+
+            HttpPost request = new HttpPost("http://localhost:"+ portHashMap.get(personCount.getPerson_ID().toString())+"/api/v1/person/requestrc");
             P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(peer_id,request_Row, request_Col);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
