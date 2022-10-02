@@ -21,30 +21,30 @@ public class DemoApplication {
 		return DriverManager.getConnection(url, user, password);
 	}
 	public static void main(String[] args) {
-		truncateVPersonandPersonRC();
+//		truncateVPersonandPersonRC();
 		P4PParameters.initialize(512,true);
 //		PeerDataAccessService.pv.setChecksumCoefficientVectors(P4PSim.c);
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
-	public static void truncateVPersonandPersonRC(){
-		String SQL = "TRUNCATE TABLE V_PERSON_DATA; TRUNCATE TABLE person_rc; Truncate Table hashlist;Truncate Table person_stats;";
-		try (Connection conn = connect();
-			 PreparedStatement pstmt = conn.prepareStatement(SQL,
-					 Statement.RETURN_GENERATED_KEYS)) {
-			int affectedRows = pstmt.executeUpdate();
-			if (affectedRows > 0) {
-				try (ResultSet rs = pstmt.getGeneratedKeys()) {
-					System.out.println(rs);
-				} catch (SQLException ex) {
-					System.out.println(ex.getMessage());
-				}
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
+//	public static void truncateVPersonandPersonRC(){
+//		String SQL = "TRUNCATE TABLE V_PERSON_DATA; TRUNCATE TABLE person_rc; Truncate Table hashlist;Truncate Table person_stats;";
+//		try (Connection conn = connect();
+//			 PreparedStatement pstmt = conn.prepareStatement(SQL,
+//					 Statement.RETURN_GENERATED_KEYS)) {
+//			int affectedRows = pstmt.executeUpdate();
+//			if (affectedRows > 0) {
+//				try (ResultSet rs = pstmt.getGeneratedKeys()) {
+//					System.out.println(rs);
+//				} catch (SQLException ex) {
+//					System.out.println(ex.getMessage());
+//				}
+//			}
+//		} catch (SQLException e) {
+//			System.out.println(e.getMessage());
+//			e.printStackTrace();
+//		}
+//	}
 
 
 }

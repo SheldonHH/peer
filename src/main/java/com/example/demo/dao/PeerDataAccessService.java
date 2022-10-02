@@ -22,11 +22,31 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.demo.p4p.sim.P4PSim.m;
 
 @Repository("postgres1")
 public class PeerDataAccessService implements PeerDao{
+    public static Map<String, String> userNameMap = Stream.of(new String[][] {
+            { "f000aa01-0451-4000-b000-000000000000", "client1" },
+            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "client2" },
+            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "client3" },
+            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "client4" },
+//            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "client5" },
+//            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "client6" }
+    }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+    public static Map<String, String> userPortMap = Stream.of(new String[][] {
+            { "f000aa01-0451-4000-b000-000000000000", "6001" },
+            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "6002" },
+            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "6003" },
+            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "6004" },
+//            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "6005" },
+//            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "6006" }
+    }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+
+
     private static List<Person> DB = new ArrayList<>();
     private final String url = "jdbc:postgresql://localhost:5432/peer1";
     private final String user = "peer1";
@@ -150,8 +170,8 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int insertViandProof(UUID data_id,ViandProof viandProof)
     {
-        String SQL = "INSERT INTO V_PERSON_DATA(data_id,name,v1,v2,verified) "
-                + "VALUES(?,?,?,?,?)";
+        String SQL = "INSERT INTO V_PERSON_DATA(data_id,client_id,vi,verified,created_at) "
+                + "VALUES(?,?,?,?,NOW())";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -166,11 +186,10 @@ public class PeerDataAccessService implements PeerDao{
                     .toArray(String[]::new);
             Array vi_array = conn.createArrayOf("TEXT", strArray);
             pstmt.setArray(3,  vi_array);
-            pstmt.setArray(4, vi_array);
             long [] V_longs = Arrays.stream(strArray).mapToLong(Long::parseLong).toArray();
             pv.setV(V_longs);
             boolean peerPassed = pv.verify2(viandProof.getPeerProof()); // 🌟 verify2 🌟
-            pstmt.setBoolean(5, peerPassed);
+            pstmt.setBoolean(4, peerPassed);
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -206,8 +225,8 @@ public class PeerDataAccessService implements PeerDao{
         System.out.println("rcVisTupleUser getRowVs hash" + responseVRowCol.getRowVs().toString().hashCode());
 
         String rcSQL = "SELECT row, col from person_rc where user_id = ?";
-        String RowHashSQL = "SELECT hashresult from hashlist where index = ? and name = ? and roworcol='row'";
-        String colHashSQL = "SELECT hashresult from hashlist where index = ? and name = ? and roworcol='col'";
+        String RowHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='row'";
+        String colHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='col'";
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(rcSQL);
@@ -254,23 +273,27 @@ public class PeerDataAccessService implements PeerDao{
                 System.out.println("col V verification pass");
             }
             if(hashResultcol != responseVRowCol.getColVs().toString().hashCode() || hashResultRow != responseVRowCol.getRowVs().toString().hashCode()){
-                System.out.println("NOT PASS V Hash TEST");
-                try {
-                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
-                    StringEntity json = new StringEntity(mapper.writeValueAsString(responseVRowCol.getUser_id()), ContentType.APPLICATION_JSON);
-                    request.setEntity(json);
-                    CloseableHttpResponse response = httpClient.execute(request);
-                    if(response.getStatusLine().getStatusCode() != 200){
-                        System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
-                    }
-                    response.close();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                HashMap<String, String> userNameHashMap =
+                        (userNameMap instanceof HashMap)
+                                ? (HashMap) userNameMap
+                                : new HashMap<String, String>(userNameMap);
+                System.out.println(userNameHashMap.get(responseVRowCol.getUser_id().toString())+" NOT PASS V Hash TEST");
+//                try {
+//                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
+//                    ObjectMapper mapper = new ObjectMapper();
+//                    mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+//                    StringEntity json = new StringEntity(mapper.writeValueAsString(responseVRowCol.getUser_id()), ContentType.APPLICATION_JSON);
+//                    request.setEntity(json);
+//                    CloseableHttpResponse response = httpClient.execute(request);
+//                    if(response.getStatusLine().getStatusCode() != 200){
+//                        System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+//                    }
+//                    response.close();
+//                } catch (JsonProcessingException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
             }
 
@@ -282,7 +305,7 @@ public class PeerDataAccessService implements PeerDao{
         @Override
     public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps) {
         String SQL = "INSERT INTO " +
-                "HashList(hash_id, name, rowOrCol, index, HashResult) "
+                "HashList(hash_id, client_id, rowOrCol, index, HashResult) "
                 + "VALUES(?,?,?,?,?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
@@ -329,11 +352,11 @@ public class PeerDataAccessService implements PeerDao{
 
     @Override
     public long sumVi(UUID person_id) {
-        String SQL = "SELECT v1 FROM V_PERSON_DATA where name=?";
+        String SQL = "SELECT vi FROM V_PERSON_DATA where client_id=?";
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-            System.out.println("person_id:"+person_id);
+            System.out.println("sumVi person_id:"+person_id);
             //TODO: change to UUID tyope
             preparedStatement.setString(1,person_id.toString());
             ResultSet rs = preparedStatement.executeQuery();
@@ -341,8 +364,8 @@ public class PeerDataAccessService implements PeerDao{
             ArrayList<ArrayList<Long>> TwoDResultList = new ArrayList<ArrayList<Long>>();
             ArrayList<String> stringList = new ArrayList<String>();
             while (rs.next()) {
-                stringList = new ArrayList<>(Arrays.asList((String[]) rs.getArray("v1").getArray()));
-                System.out.println(Arrays.asList((String[]) rs.getArray("v1").getArray()));
+                stringList = new ArrayList<>(Arrays.asList((String[]) rs.getArray("vi").getArray()));
+                System.out.println(Arrays.asList((String[]) rs.getArray("vi").getArray()));
                 ArrayList<Long> resultIntList = new ArrayList<Long>();
                 for (String stringValue : stringList) {
                     try {
