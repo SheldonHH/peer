@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import com.example.demo.p4p.user.UserVector2;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;
 
@@ -8,11 +9,21 @@ public class ViandProof {
     private UUID userid;
     private long[] vi;
     private UserVector2.L2NormBoundProof2 peerProof;
+    private String batch_timestamp;
 
-    public ViandProof(UUID userid, long[] vi, UserVector2.L2NormBoundProof2 peerProof) {
+    public ViandProof(UUID userid, long[] vi, UserVector2.L2NormBoundProof2 peerProof, @JsonProperty("batch_timestamp") String batch_timestamp)  {
         this.userid = userid;
         this.vi = vi;
         this.peerProof = peerProof;
+        this.batch_timestamp = batch_timestamp;
+    }
+
+    public String getBatch_timestamp() {
+        return batch_timestamp;
+    }
+
+    public void setBatch_timestamp(String batch_timestamp) {
+        this.batch_timestamp = batch_timestamp;
     }
 
     public UUID getUserid() {

@@ -8,11 +8,21 @@ public class VSum
     UUID peerID;
     UUID personID;
     ArrayList<Long> v_sum;
+    String batch_time;
 
-    public VSum(UUID peerID, UUID personID, ArrayList<Long> v_sum) {
+    public VSum(UUID peerID, UUID personID, ArrayList<Long> v_sum, String batch_time) {
         this.peerID = peerID;
         this.personID = personID;
         this.v_sum = v_sum;
+        this.batch_time = batch_time;
+    }
+
+    public String getBatch_time() {
+        return batch_time;
+    }
+
+    public void setBatch_time(String batch_time) {
+        this.batch_time = batch_time;
     }
 
     public UUID getPersonID() {

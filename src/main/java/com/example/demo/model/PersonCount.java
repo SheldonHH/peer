@@ -10,10 +10,20 @@ public class PersonCount {
     @NotBlank
     private final int count;
     private final UUID person_ID;
+    private String batch_time;
 
-    public PersonCount(@JsonProperty("count") int count, @JsonProperty("person_ID") UUID person_ID) {
+    public PersonCount(@JsonProperty("count") int count, @JsonProperty("person_ID") UUID person_ID, @JsonProperty("batch_time")String batch_time) {
         this.count = count;
         this.person_ID = person_ID;
+        this.batch_time = batch_time;
+    }
+
+    public String getBatch_time() {
+        return batch_time;
+    }
+
+    public void setBatch_time(String batch_time) {
+        this.batch_time = batch_time;
     }
 
     public int getCount() {

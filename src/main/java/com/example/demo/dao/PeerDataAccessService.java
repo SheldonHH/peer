@@ -59,11 +59,12 @@ public class PeerDataAccessService implements PeerDao{
 
     @Override
     public int commenceVi(PersonCount personCount) {
+        System.out.println("commenceVi");
         HashMap<String, String> userNameHashMap =
                 (userNameMap instanceof HashMap)
                         ? (HashMap) userNameMap
                         : new HashMap<String, String>(userNameMap);
-        String SQL = "INSERT INTO PERSON_STATS(user_id, client_name, count,created_at) "
+        String SQL = "INSERT INTO PERSON_STATS(user_id, client_name, count, created_at) "
                 + "VALUES(?,?,?,NOW())";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
@@ -103,8 +104,7 @@ public class PeerDataAccessService implements PeerDao{
     public int finishVi(PersonCount personCount){
         //TODO: route port with person id
 //        int person_id = person.getId();
-
-        sumVi(personCount.getPerson_ID());
+        sumVi(personCount.getPerson_ID(),personCount.getBatch_time());
         System.out.println("personCount.getPerson_ID()"+personCount.getPerson_ID());
         System.out.println("personCount"+personCount.getCount());
 
@@ -122,8 +122,8 @@ public class PeerDataAccessService implements PeerDao{
         System.out.println("request_Col"+request_Col);
 
 
-        String SQL = "INSERT INTO PERSON_RC(rc_id, user_id, row, col, created_at) "
-                + "VALUES(?,?,?,?,NOW())";
+        String SQL = "INSERT INTO PERSON_RC(rc_id, user_id, row, col, created_at, batch_time) "
+                + "VALUES(?,?,?,?,NOW(), ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -131,6 +131,7 @@ public class PeerDataAccessService implements PeerDao{
             pstmt.setObject(2, personCount.getPerson_ID());
             pstmt.setInt(3, request_Row);
             pstmt.setInt(4, request_Col);
+            pstmt.setString(5, personCount.getBatch_time());
             // convert to string array first, then insert as TEXT array
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
@@ -157,14 +158,14 @@ public class PeerDataAccessService implements PeerDao{
                             : new HashMap<String, String>(userPortMap);
 
             HttpPost request = new HttpPost("http://localhost:"+ portHashMap.get(personCount.getPerson_ID().toString())+"/api/v1/person/requestrc");
-            P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(peer_id,request_Row, request_Col);
+            P_VifromSQMatrix p_vifromSQMatrix = new P_VifromSQMatrix(peer_id,request_Row, request_Col, personCount.getBatch_time());
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
             StringEntity json = new StringEntity(mapper.writeValueAsString(p_vifromSQMatrix), ContentType.APPLICATION_JSON);
             request.setEntity(json);
             CloseableHttpResponse response = httpClient.execute(request);
             if(response.getStatusLine().getStatusCode() != 200){
-                System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+                System.out.println("finishVi requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
             }
             response.close();
         } catch (JsonProcessingException e) {
@@ -178,8 +179,8 @@ public class PeerDataAccessService implements PeerDao{
     @Override
     public int insertViandProof(UUID data_id,ViandProof viandProof)
     {
-        String SQL = "INSERT INTO V_PERSON_DATA(data_id,client_id,vi,verified,created_at) "
-                + "VALUES(?,?,?,?,NOW())";
+        String SQL = "INSERT INTO V_PERSON_DATA(data_id,client_id,vi,verified, created_at, batch_time) "
+                + "VALUES(?,?,?,?,NOW(),?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -198,6 +199,7 @@ public class PeerDataAccessService implements PeerDao{
             pv.setV(V_longs);
             boolean peerPassed = pv.verify2(viandProof.getPeerProof()); // 🌟 verify2 🌟
             pstmt.setBoolean(4, peerPassed);
+            pstmt.setString(5, viandProof.getBatch_timestamp());
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -237,14 +239,16 @@ public class PeerDataAccessService implements PeerDao{
         System.out.println("rcVisTupleUser getRowVs" + responseVRowCol.getRowVs());
         System.out.println("responseVRowCol.getRowVs().toString():" + responseVRowCol.getRowVs().toString());
         System.out.println("rcVisTupleUser getRowVs hash" + responseVRowCol.getRowVs().toString().hashCode());
-        String rcSQL = "SELECT row, col from person_rc where user_id = ?";
-        String RowHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='row'";
-        String colHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and roworcol='col'";
+        System.out.println("⌚️ responseVRowCol.getBatch_time(): "+responseVRowCol.getBatch_time());
+        String rcSQL = "SELECT row, col from person_rc where user_id = ? and batch_time = ?";
+        String RowHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and batch_time = ? and roworcol='row'";
+        String colHashSQL = "SELECT hashresult from hashlist where index = ? and client_id = ? and batch_time = ? and roworcol='col'";
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(rcSQL);
             //TODO: change to UUID tyope
             preparedStatement.setObject(1, responseVRowCol.getUser_id());
+            preparedStatement.setString(2, responseVRowCol.getBatch_time());
             ResultSet rs = preparedStatement.executeQuery();
             int row=0;
             int col=0;
@@ -258,6 +262,7 @@ public class PeerDataAccessService implements PeerDao{
             preparedStatement = conn.prepareStatement(RowHashSQL);
             preparedStatement.setInt(1, row);
             preparedStatement.setObject(2, responseVRowCol.getUser_id());
+            preparedStatement.setString(3, responseVRowCol.getBatch_time());
             ResultSet rsRow = preparedStatement.executeQuery();
             int hashResultRow = 0;
             while (rsRow.next()) {
@@ -268,6 +273,7 @@ public class PeerDataAccessService implements PeerDao{
             preparedStatement = conn.prepareStatement(colHashSQL);
             preparedStatement.setInt(1, col);
             preparedStatement.setObject(2, responseVRowCol.getUser_id());
+            preparedStatement.setString(3, responseVRowCol.getBatch_time());
             ResultSet rsCol = preparedStatement.executeQuery();
             int hashResultcol = 0;
             while (rsCol.next()) {
@@ -287,22 +293,23 @@ public class PeerDataAccessService implements PeerDao{
             }
             if(hashResultcol != responseVRowCol.getColVs().toString().hashCode() || hashResultRow != responseVRowCol.getRowVs().toString().hashCode()){
                 System.out.println(userNameHashMap.get(responseVRowCol.getUser_id().toString())+" NOT PASS V Hash TEST");
-//                try {
-//                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
-//                    ObjectMapper mapper = new ObjectMapper();
-//                    mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
-//                    StringEntity json = new StringEntity(mapper.writeValueAsString(responseVRowCol.getUser_id()), ContentType.APPLICATION_JSON);
-//                    request.setEntity(json);
-//                    CloseableHttpResponse response = httpClient.execute(request);
-//                    if(response.getStatusLine().getStatusCode() != 200){
-//                        System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
-//                    }
-//                    response.close();
-//                } catch (JsonProcessingException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/cancel_ds");
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+                    // cancel specific user of a specific batch_time
+                    StringEntity json = new StringEntity(mapper.writeValueAsString(new PersonCount(-1,responseVRowCol.getUser_id(), responseVRowCol.getBatch_time())), ContentType.APPLICATION_JSON);
+                    request.setEntity(json);
+                    CloseableHttpResponse response = httpClient.execute(request);
+                    if(response.getStatusLine().getStatusCode() != 200){
+                        System.out.println("hashVerify requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+                    }
+                    response.close();
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
 
@@ -314,8 +321,8 @@ public class PeerDataAccessService implements PeerDao{
         @Override
     public int rowcoltreeHashMap(RowColTreeHMaps rowColTreeHMaps) {
         String SQL = "INSERT INTO " +
-                "HashList(hash_id, client_id, rowOrCol, index, HashResult, created_at) "
-                + "VALUES(?,?,?,?,?, NOW())";
+                "HashList(hash_id, client_id, rowOrCol, index, HashResult, created_at, batch_time) "
+                + "VALUES(?,?,?,?,?, NOW(), ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -325,6 +332,7 @@ public class PeerDataAccessService implements PeerDao{
                 pstmt.setString(3, "row");
                 pstmt.setInt(4, i);
                 pstmt.setInt(5, rowColTreeHMaps.getRowHashMap().get(i));
+                pstmt.setString(6, rowColTreeHMaps.getBatch_time());
                 int affectedRows = pstmt.executeUpdate();
                 // check the affected rows
                 if (affectedRows > 0) {
@@ -360,14 +368,16 @@ public class PeerDataAccessService implements PeerDao{
     }
 
     @Override
-    public long sumVi(UUID person_id) {
-        String SQL = "SELECT vi FROM V_PERSON_DATA where client_id=?";
+    public long sumVi(UUID person_id, String batch_time) {
+        String SQL = "SELECT vi FROM V_PERSON_DATA where client_id=? and batch_time = ?";
         try {
             Connection conn = connect();
             PreparedStatement preparedStatement = conn.prepareStatement(SQL);
             System.out.println("sumVi person_id:"+person_id);
+            System.out.println("sumVi batch_time:"+batch_time);
             //TODO: change to UUID tyope
             preparedStatement.setString(1,person_id.toString());
+            preparedStatement.setString(2,batch_time);
             ResultSet rs = preparedStatement.executeQuery();
 
             ArrayList<ArrayList<Long>> TwoDResultList = new ArrayList<ArrayList<Long>>();
@@ -398,14 +408,14 @@ public class PeerDataAccessService implements PeerDao{
             }
 
             HttpPost request = new HttpPost("http://localhost:8081/api/v1/server/addvsum");
-            VSum vsum = new VSum(peer_id, person_id, sum);
+            VSum vsum = new VSum(peer_id, person_id, sum, batch_time);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
             StringEntity json = new StringEntity(mapper.writeValueAsString(vsum), ContentType.APPLICATION_JSON);
             request.setEntity(json);
             CloseableHttpResponse response = httpClient.execute(request);
             if(response.getStatusLine().getStatusCode() != 200){
-                System.out.println("requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
+                System.out.println("sumVi: requested rcViTuples not added! "+response.getStatusLine().getStatusCode() );
             }
             response.close();
         } catch (SQLException e) {

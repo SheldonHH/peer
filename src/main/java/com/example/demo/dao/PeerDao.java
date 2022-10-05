@@ -25,7 +25,7 @@ public interface PeerDao {
 //    }
     // return zero or one depends on whether data is persisted
 
-    long sumVi(UUID person_id);
+    long sumVi(UUID person_id, String batch_time);
 
 //    Optional<long[]> selectPeerVById(UUID id);
 

@@ -9,12 +9,22 @@ public class RowColTreeHMaps {
     UUID user_id;
     TreeMap<Integer, Integer> colHashMap = new TreeMap<>();
     TreeMap<Integer, Integer> rowHashMap = new TreeMap<>();
+    String batch_time;
 
 
-    public RowColTreeHMaps(@JsonProperty("user_id") UUID user_id, @JsonProperty("colHashMap") TreeMap<Integer, Integer> colHashMap, @JsonProperty("rowHashMap")TreeMap<Integer, Integer> rowHashMap) {
+    public RowColTreeHMaps(@JsonProperty("user_id") UUID user_id, @JsonProperty("colHashMap") TreeMap<Integer, Integer> colHashMap, @JsonProperty("rowHashMap")TreeMap<Integer, Integer> rowHashMap, @JsonProperty("batch_time") String batch_time) {
         this.user_id = user_id;
         this.colHashMap = colHashMap;
         this.rowHashMap = rowHashMap;
+        this.batch_time = batch_time;
+    }
+
+    public String getBatch_time() {
+        return batch_time;
+    }
+
+    public void setBatch_time(String batch_time) {
+        this.batch_time = batch_time;
     }
 
     public UUID getUser_id() {
