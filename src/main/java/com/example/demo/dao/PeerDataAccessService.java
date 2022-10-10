@@ -30,26 +30,26 @@ import static com.example.demo.p4p.sim.P4PSim.m;
 @Repository("postgres1")
 public class PeerDataAccessService implements PeerDao{
     public static Map<String, String> userNameMap = Stream.of(new String[][] {
-            { "f000aa01-0451-4000-b000-000000000000", "client1" },
-            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "client2" },
-            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "client3" },
-            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "client4" },
-//            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "client5" },
-//            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "client6" }
+//            { "f000aa01-0451-4000-b000-000000000000", "client1" },
+//            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "client2" },
+//            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "client3" },
+//            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "client4" },
+            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "client5" },
+            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "client6" }
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
     public static Map<String, String> userPortMap = Stream.of(new String[][] {
-            { "f000aa01-0451-4000-b000-000000000000", "6001" },
-            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "6002" },
-            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "6003" },
-            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "6004" },
-//            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "6005" },
-//            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "6006" }
+//            { "f000aa01-0451-4000-b000-000000000000", "6001" },
+//            { "0c1e1494-aa4a-4afa-b494-d49754b0e244", "6002" },
+//            { "5ce6d22a-67be-4b64-9fee-e3302c972f6f", "6003" },
+//            { "7371c17b-f1c4-45f7-84e5-0909d3470a26", "6004" },
+            { "b06f2b0a-db55-42f6-a01d-7b4307229896", "6005" },
+            { "61dd18f9-0d0a-4dd7-a04e-c8a36c3fc461", "6006" }
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
     private static List<Person> DB = new ArrayList<>();
-    private final String url = "jdbc:postgresql://localhost:5432/peer1";
-    private final String user = "peer1";
+    private final String url = "jdbc:postgresql://localhost:5432/peer3";
+    private final String user = "peer3";
     private final String password = "password";
-    UUID peer_id = UUID.fromString("a732b18a-17b4-4cfc-bf22-66a64bd2583f");
+    UUID peer_id = UUID.fromString("9ff9e1fa-9d74-4968-8794-f27a98f05b45");
     public static UserVector2 pv = new UserVector2(m, P4PSim.F, P4PSim.l, P4PSim.g, P4PSim.h);
 
     public Connection connect() throws SQLException {
@@ -64,14 +64,15 @@ public class PeerDataAccessService implements PeerDao{
                 (userNameMap instanceof HashMap)
                         ? (HashMap) userNameMap
                         : new HashMap<String, String>(userNameMap);
-        String SQL = "INSERT INTO PERSON_STATS(user_id, client_name, count, created_at) "
-                + "VALUES(?,?,?,NOW())";
+        String SQL = "INSERT INTO PERSON_STATS(user_id, client_name, count, created_at, batch_time) "
+                + "VALUES(?,?,?,NOW(),?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setObject(1, personCount.getPerson_ID());
             pstmt.setString(2, userNameHashMap.get(personCount.getPerson_ID().toString()));
             pstmt.setInt(3, personCount.getCount());
+            pstmt.setString(4, personCount.getBatch_time());
             // convert to string array first, then insert as TEXT array
             int affectedRows = pstmt.executeUpdate();
             // check the affected rows
